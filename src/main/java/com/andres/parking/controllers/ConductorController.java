@@ -1,7 +1,9 @@
 package com.andres.parking.controllers;
 
 import com.andres.parking.entities.Conductor;
+import com.andres.parking.entities.Plaza;
 import com.andres.parking.repositories.ConductorRepository;
+import com.andres.parking.repositories.PlazaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class ConductorController {
 
     private final ConductorRepository conductorRepository;
+    private final PlazaRepository plazaRepository;
 
     @GetMapping
     public ResponseEntity<List<Conductor>> listarTodos() {
@@ -55,6 +58,15 @@ public class ConductorController {
         if (!conductorRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
+        // Liberar las plazas asignadas a este conductor
+        List<Plaza> plazasAsignadas = plazaRepository.findByConductorId(id);
+        for (Plaza plaza : plazasAsignadas) {
+            plaza.setConductor(null);
+            plaza.setOcupada(false);
+            plazaRepository.save(plaza);
+        }
+
         conductorRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("mensaje", "Conductor eliminado"));
     }
