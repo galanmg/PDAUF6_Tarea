@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ConductoresPage from './pages/ConductoresPage';
+import CochesPage from './pages/CochesPage';
 import PlazasPage from './pages/PlazasPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -22,6 +23,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ConductoresPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coches"
+            element={
+              <ProtectedRoute>
+                <CochesPage />
               </ProtectedRoute>
             }
           />

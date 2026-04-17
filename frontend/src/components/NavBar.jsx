@@ -33,6 +33,14 @@ function Navbar() {
                   Conductores
                 </NavLink>
                 <NavLink
+                  to="/coches"
+                  className={({ isActive }) =>
+                    isActive ? 'text-blue-400 font-semibold' : 'hover:text-blue-300'
+                  }
+                >
+                  Vehículos
+                </NavLink>
+                <NavLink
                   to="/plazas"
                   className={({ isActive }) =>
                     isActive ? 'text-blue-400 font-semibold' : 'hover:text-blue-300'
