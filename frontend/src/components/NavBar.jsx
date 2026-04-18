@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Button } from '@/components/ui/button';
 
 function Navbar() {
   const { usuario, logout, isAuthenticated } = useAuth();
@@ -51,12 +52,9 @@ function Navbar() {
                 <span className="text-gray-400 text-sm">
                   Hola, {usuario?.nombre}
                 </span>
-                <button
-                  onClick={logout}
-                  className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-sm"
-                >
+                <Button variant="destructive" size="sm" onClick={logout}>
                   Cerrar sesión
-                </button>
+                </Button>
               </>
             ) : (
               <>
@@ -68,11 +66,8 @@ function Navbar() {
                 >
                   Iniciar sesión
                 </NavLink>
-                <NavLink
-                  to="/registro"
-                  className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded text-sm"
-                >
-                  Registrarse
+                <NavLink to="/registro">
+                  <Button size="sm">Registrarse</Button>
                 </NavLink>
               </>
             )}

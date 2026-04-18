@@ -1,5 +1,19 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from '@/components/ui/table';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 
 function CochesPage() {
   const [vehiculos, setVehiculos] = useState([]);
@@ -10,14 +24,12 @@ function CochesPage() {
   const [ordenAsc, setOrdenAsc] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
-  // Modal vehículo
   const [modalAbierto, setModalAbierto] = useState(false);
   const [vehiculoEditando, setVehiculoEditando] = useState(null);
   const [formVehiculo, setFormVehiculo] = useState({
     matricula: '', marca: '', modelo: '', color: '', conductorId: ''
   });
 
-  // Confirmación eliminar
   const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
@@ -107,8 +119,6 @@ function CochesPage() {
       return ordenAsc ? resultado : -resultado;
     });
 
-  // ---- CRUD ----
-
   const abrirModalCrear = () => {
     if (conductores.length === 0) {
       setError('Primero debes crear al menos un conductor');
@@ -176,13 +186,8 @@ function CochesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Vehículos</h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{vehiculos.length} vehículos registrados</span>
-          <button
-            onClick={abrirModalCrear}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-          >
-            + Nuevo vehículo
-          </button>
+          <Badge variant="secondary">{vehiculos.length} registrados</Badge>
+          <Button onClick={abrirModalCrear}>+ Nuevo vehículo</Button>
         </div>
       </div>
 
@@ -193,14 +198,11 @@ function CochesPage() {
         </div>
       )}
 
-      {/* Buscador */}
       <div className="mb-4">
-        <input
-          type="text"
+        <Input
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           placeholder="Buscar por matrícula, marca, modelo, color, conductor, DNI o plaza..."
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -210,215 +212,117 @@ function CochesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    onClick={() => cambiarOrden('matricula')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Matrícula{iconoOrden('matricula')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('marca')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Marca{iconoOrden('marca')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('modelo')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Modelo{iconoOrden('modelo')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('color')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Color{iconoOrden('color')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('conductor')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Conductor{iconoOrden('conductor')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('dni')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    DNI{iconoOrden('dni')}
-                  </th>
-                  <th
-                    onClick={() => cambiarOrden('plaza')}
-                    className="px-4 py-3 text-left text-sm font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
-                  >
-                    Plaza{iconoOrden('plaza')}
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                    Teléfono
-                  </th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {vehiculosFiltrados.map((v) => (
-                  <tr key={v.id} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-mono font-medium">{v.matricula}</td>
-                    <td className="px-4 py-3 text-sm">{v.marca}</td>
-                    <td className="px-4 py-3 text-sm">{v.modelo}</td>
-                    <td className="px-4 py-3 text-sm">{v.color}</td>
-                    <td className="px-4 py-3 text-sm font-medium">{v.conductorNombre}</td>
-                    <td className="px-4 py-3 text-sm">{v.conductorDni}</td>
-                    <td className="px-4 py-3 text-sm">
-                      <span className={v.plazas === '—' ? 'text-gray-400' : 'text-blue-600 font-medium'}>
-                        {v.plazas}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{v.conductorTelefono}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => abrirModalEditar(v)}
-                        className="text-blue-600 hover:underline text-sm mr-3"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => setConfirmDelete(v)}
-                        className="text-red-600 hover:underline text-sm"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('matricula')}>Matrícula{iconoOrden('matricula')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('marca')}>Marca{iconoOrden('marca')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('modelo')}>Modelo{iconoOrden('modelo')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('color')}>Color{iconoOrden('color')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('conductor')}>Conductor{iconoOrden('conductor')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('dni')}>DNI{iconoOrden('dni')}</TableHead>
+                <TableHead className="cursor-pointer hover:bg-gray-100 select-none" onClick={() => cambiarOrden('plaza')}>Plaza{iconoOrden('plaza')}</TableHead>
+                <TableHead>Teléfono</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {vehiculosFiltrados.map((v) => (
+                <TableRow key={v.id}>
+                  <TableCell className="font-mono font-medium">{v.matricula}</TableCell>
+                  <TableCell>{v.marca}</TableCell>
+                  <TableCell>{v.modelo}</TableCell>
+                  <TableCell>{v.color}</TableCell>
+                  <TableCell className="font-medium">{v.conductorNombre}</TableCell>
+                  <TableCell><Badge variant="outline">{v.conductorDni}</Badge></TableCell>
+                  <TableCell>
+                    <span className={v.plazas === '—' ? 'text-gray-400' : ''}>
+                      {v.plazas !== '—' ? <Badge>{v.plazas}</Badge> : '—'}
+                    </span>
+                  </TableCell>
+                  <TableCell>{v.conductorTelefono}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" onClick={() => abrirModalEditar(v)}>Editar</Button>
+                    <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setConfirmDelete(v)}>Eliminar</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
-      <p className="text-xs text-gray-400 mt-3">
-        Haz clic en las cabeceras de la tabla para ordenar por esa columna
-      </p>
+      <p className="text-xs text-gray-400 mt-3">Haz clic en las cabeceras de la tabla para ordenar</p>
 
-      {/* Modal Vehículo */}
-      {modalAbierto && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">
-              {vehiculoEditando ? 'Editar vehículo' : 'Nuevo vehículo'}
-            </h2>
-            <form onSubmit={guardarVehiculo}>
-              {!vehiculoEditando && (
-                <div className="mb-3">
-                  <label className="block text-sm font-medium mb-1">
-                    Conductor <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={formVehiculo.conductorId}
-                    onChange={(e) => setFormVehiculo({ ...formVehiculo, conductorId: e.target.value })}
-                    required
-                    className="w-full border rounded-lg px-3 py-2"
-                  >
-                    <option value="">Selecciona un conductor</option>
-                    {conductores.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nombre} {c.apellidos} — {c.dni}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              {vehiculoEditando && (
-                <div className="mb-3 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-600">
-                  Conductor: <span className="font-medium">{vehiculoEditando.conductorNombre}</span>
-                </div>
-              )}
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Matrícula</label>
-                <input
-                  type="text"
-                  value={formVehiculo.matricula}
-                  onChange={(e) => setFormVehiculo({ ...formVehiculo, matricula: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Marca</label>
-                <input
-                  type="text"
-                  value={formVehiculo.marca}
-                  onChange={(e) => setFormVehiculo({ ...formVehiculo, marca: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1">Modelo</label>
-                <input
-                  type="text"
-                  value={formVehiculo.modelo}
-                  onChange={(e) => setFormVehiculo({ ...formVehiculo, modelo: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Color</label>
-                <input
-                  type="text"
-                  value={formVehiculo.color}
-                  onChange={(e) => setFormVehiculo({ ...formVehiculo, color: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                />
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setModalAbierto(false)}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+      {/* Dialog Vehículo */}
+      <Dialog open={modalAbierto} onOpenChange={setModalAbierto}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{vehiculoEditando ? 'Editar vehículo' : 'Nuevo vehículo'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={guardarVehiculo} className="space-y-3">
+            {!vehiculoEditando && (
+              <div>
+                <Label>Conductor <span className="text-red-500">*</span></Label>
+                <select
+                  value={formVehiculo.conductorId}
+                  onChange={(e) => setFormVehiculo({ ...formVehiculo, conductorId: e.target.value })}
+                  required
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs mt-1"
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Guardar
-                </button>
+                  <option value="">Selecciona un conductor</option>
+                  {conductores.map((c) => (
+                    <option key={c.id} value={c.id}>{c.nombre} {c.apellidos} — {c.dni}</option>
+                  ))}
+                </select>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmación eliminar */}
-      {confirmDelete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-bold mb-2">¿Eliminar vehículo?</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Se eliminará el vehículo {confirmDelete.matricula} de {confirmDelete.conductorNombre}.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => eliminarVehiculo(confirmDelete)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Eliminar
-              </button>
+            )}
+            {vehiculoEditando && (
+              <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-600">
+                Conductor: <span className="font-medium">{vehiculoEditando.conductorNombre}</span>
+              </div>
+            )}
+            <div>
+              <Label htmlFor="vc-matricula">Matrícula</Label>
+              <Input id="vc-matricula" value={formVehiculo.matricula} onChange={(e) => setFormVehiculo({ ...formVehiculo, matricula: e.target.value })} className="mt-1" />
             </div>
-          </div>
-        </div>
-      )}
+            <div>
+              <Label htmlFor="vc-marca">Marca</Label>
+              <Input id="vc-marca" value={formVehiculo.marca} onChange={(e) => setFormVehiculo({ ...formVehiculo, marca: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="vc-modelo">Modelo</Label>
+              <Input id="vc-modelo" value={formVehiculo.modelo} onChange={(e) => setFormVehiculo({ ...formVehiculo, modelo: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="vc-color">Color</Label>
+              <Input id="vc-color" value={formVehiculo.color} onChange={(e) => setFormVehiculo({ ...formVehiculo, color: e.target.value })} className="mt-1" />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="button" variant="outline" onClick={() => setModalAbierto(false)}>Cancelar</Button>
+              <Button type="submit">Guardar</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* AlertDialog eliminar */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar vehículo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se eliminará el vehículo {confirmDelete?.matricula} de {confirmDelete?.conductorNombre}. Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => eliminarVehiculo(confirmDelete)} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
