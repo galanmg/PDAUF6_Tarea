@@ -7,7 +7,7 @@ import api from '../services/api';
 
 function HomePage() {
   const { isAuthenticated } = useAuth();
-  const [stats, setStats] = useState({ conductores: 0, ocupadas: 0, total: 0 });
+  const [stats, setStats] = useState({ conductores: 0, vehiculos: 0, ocupadas: 0, total: 0 });
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -21,8 +21,16 @@ function HomePage() {
         api.get('/api/conductores'),
         api.get('/api/plazas')
       ]);
+
+      let totalVehiculos = 0;
+      for (const conductor of conductoresRes.data) {
+        const vehiculosRes = await api.get(`/api/conductores/${conductor.id}/vehiculos`);
+        totalVehiculos += vehiculosRes.data.length;
+      }
+
       setStats({
         conductores: conductoresRes.data.length,
+        vehiculos: totalVehiculos,
         ocupadas: plazasRes.data.filter(p => p.ocupada).length,
         total: plazasRes.data.length
       });
@@ -43,37 +51,46 @@ function HomePage() {
         <Badge variant="secondary" className="mb-6">v1.0 — 44 plazas · 2 plantas</Badge>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-blue-50 rounded-lg p-6">
-            <div className="text-3xl mb-3">👤</div>
-            <h3 className="font-semibold text-lg mb-2">Conductores</h3>
-            <p className="text-gray-600 text-sm">
-              Gestiona los perfiles de los conductores y sus vehículos
-            </p>
-            {isAuthenticated() && (
-              <Badge className="mt-3">{stats.conductores} registrados</Badge>
-            )}
-          </div>
+          <Link to={isAuthenticated() ? '/conductores' : '/login'} className="block">
+            <div className="bg-blue-50 rounded-lg p-6 hover:bg-blue-100 transition h-full">
+              <div className="text-3xl mb-3">👤</div>
+              <h3 className="font-semibold text-lg mb-2">Conductores</h3>
+              <p className="text-gray-600 text-sm">
+                Gestiona los perfiles de los conductores y sus vehículos
+              </p>
+              {isAuthenticated() && (
+                <Badge className="mt-3">{stats.conductores} registrados</Badge>
+              )}
+            </div>
+          </Link>
 
-          <div className="bg-green-50 rounded-lg p-6">
-            <div className="text-3xl mb-3">📍</div>
-            <h3 className="font-semibold text-lg mb-2">Plazas</h3>
-            <p className="text-gray-600 text-sm">
-              2 plantas con 22 plazas cada una. Visualiza y asigna plazas
-            </p>
-            {isAuthenticated() && (
-              <Badge className="mt-3" variant={stats.ocupadas === stats.total ? 'destructive' : 'secondary'}>
-                {stats.ocupadas} ocupadas de {stats.total}
-              </Badge>
-            )}
-          </div>
+          <Link to={isAuthenticated() ? '/coches' : '/login'} className="block">
+            <div className="bg-yellow-50 rounded-lg p-6 hover:bg-yellow-100 transition h-full">
+              <div className="text-3xl mb-3">🚗</div>
+              <h3 className="font-semibold text-lg mb-2">Vehículos</h3>
+              <p className="text-gray-600 text-sm">
+                Consulta y gestiona todos los vehículos del parking
+              </p>
+              {isAuthenticated() && (
+                <Badge className="mt-3">{stats.vehiculos} registrados</Badge>
+              )}
+            </div>
+          </Link>
 
-          <div className="bg-yellow-50 rounded-lg p-6">
-            <div className="text-3xl mb-3">💰</div>
-            <h3 className="font-semibold text-lg mb-2">Pagos</h3>
-            <p className="text-gray-600 text-sm">
-              Controla los pagos mensuales de cada plaza
-            </p>
-          </div>
+          <Link to={isAuthenticated() ? '/plazas' : '/login'} className="block">
+            <div className="bg-green-50 rounded-lg p-6 hover:bg-green-100 transition h-full">
+              <div className="text-3xl mb-3">📍</div>
+              <h3 className="font-semibold text-lg mb-2">Plazas</h3>
+              <p className="text-gray-600 text-sm">
+                2 plantas con 22 plazas cada una. Visualiza y asigna plazas
+              </p>
+              {isAuthenticated() && (
+                <Badge className="mt-3" variant={stats.ocupadas === stats.total ? 'destructive' : 'secondary'}>
+                  {stats.ocupadas} ocupadas de {stats.total}
+                </Badge>
+              )}
+            </div>
+          </Link>
         </div>
 
         {!isAuthenticated() && (
